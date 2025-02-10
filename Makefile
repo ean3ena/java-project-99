@@ -12,9 +12,6 @@ build:
 install:
 	./gradlew clean install
 
-run-dist:
-	@ ./build/install/bin
-
 run:
 	./gradlew run
 
