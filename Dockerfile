@@ -2,9 +2,9 @@ FROM eclipse-temurin:21-jdk
 
 ARG GRADLE_VERSION=8.7
 
-WORKDIR /app
+WORKDIR /java-project-99
 
-COPY /app .
+COPY /java-project-99 .
 
 RUN gradle installDist
 
