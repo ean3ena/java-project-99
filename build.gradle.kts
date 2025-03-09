@@ -34,6 +34,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
 
     runtimeOnly("com.h2database:h2")
+    implementation("org.postgresql:postgresql:42.7.5")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
