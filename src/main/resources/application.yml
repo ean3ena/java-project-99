@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: app
+  profiles:
+    default: dev
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  output:
+    ansi:
+      enabled: always
