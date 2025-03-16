@@ -7,6 +7,10 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
   output:
     ansi:
       enabled: always
