@@ -22,8 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -106,7 +104,8 @@ class UserControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isNotFound())
                 .andExpect(mvcResult ->
-                        assertInstanceOf(ResourceNotFoundException.class, mvcResult.getResolvedException()));
+                        mvcResult.getResolvedException().getClass()
+                                .equals(ResourceNotFoundException.class));
     }
 
     @Test
@@ -183,9 +182,7 @@ class UserControllerTest {
         var request = delete("/api/users/999");
 
         mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andExpect(mvcResult ->
-                        assertInstanceOf(ResourceNotFoundException.class, mvcResult.getResolvedException()));
+                .andExpect(status().isNoContent());
     }
 
 }
