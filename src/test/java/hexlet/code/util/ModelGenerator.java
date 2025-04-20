@@ -1,4 +1,4 @@
-package hexlet.code.controller.util;
+package hexlet.code.util;
 
 import hexlet.code.dto.UserCreateDTO;
 import hexlet.code.model.User;
@@ -18,8 +18,6 @@ public class ModelGenerator {
 
     private Model<User> userModel;
 
-    private Model<UserCreateDTO> userCreateModel;
-
     @Autowired
     private Faker faker;
 
@@ -37,13 +35,6 @@ public class ModelGenerator {
                 .supply(Select.field(User::getPasswordDigest), () -> encoder.encode(faker.internet().password()))
                 .ignore(Select.field(User::getCreatedAt))
                 .ignore(Select.field(User::getUpdatedAt))
-                .toModel();
-
-        userCreateModel = Instancio.of(UserCreateDTO.class)
-                .supply(Select.field(UserCreateDTO::getFirstName), () -> faker.name().firstName())
-                .supply(Select.field(UserCreateDTO::getLastName), () -> faker.name().lastName())
-                .supply(Select.field(UserCreateDTO::getEmail), () -> faker.internet().emailAddress())
-                .supply(Select.field(UserCreateDTO::getPassword), () -> faker.internet().password())
                 .toModel();
     }
 }
