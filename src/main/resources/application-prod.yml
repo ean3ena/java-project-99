@@ -5,5 +5,5 @@ spring:
     username: ${USERNAME}
     password: ${PASSWORD}
 rsa:
-  private-key: ${RSA_PRIVATE_KEY}
-  public-key: ${RSA_PUBLIC_KEY}
+  private-key: ${RSAPRIVATEKEY}
+  public-key: ${RSAPUBLICKEY}
