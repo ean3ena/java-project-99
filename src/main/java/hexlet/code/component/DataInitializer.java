@@ -20,6 +20,7 @@ public class DataInitializer implements ApplicationRunner {
 
         var userData = new UserCreateDTO();
 
+        userData.setFirstName("hexlet");
         userData.setEmail("hexlet@example.com");
         userData.setPassword("qwerty");
 
