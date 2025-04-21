@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -73,7 +72,7 @@ class UserControllerTest {
         testUser = Instancio.of(modelGenerator.getUserModel()).create();
         userRepository.save(testUser);
 
-        token = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
+        token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
     }
 
     @Test
@@ -141,7 +140,7 @@ class UserControllerTest {
         var dataJson = objectMapper.writeValueAsString(data);
 
         var request = put("/api/users/" + testUser.getId())
-                .with(user(testUser))
+                .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(dataJson);
 
@@ -158,13 +157,15 @@ class UserControllerTest {
         var anotherUser = Instancio.of(modelGenerator.getUserModel()).create();
         userRepository.save(anotherUser);
 
+        var tokenAnotherUser = jwt().jwt(builder -> builder.subject(anotherUser.getEmail()));
+
         var data = new HashMap<String, String>();
         data.put("firstName", "someOtherName");
 
         var dataJson = objectMapper.writeValueAsString(data);
 
         var request = put("/api/users/" + testUser.getId())
-                .with(user(anotherUser))
+                .with(tokenAnotherUser)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(dataJson);
 
@@ -181,7 +182,7 @@ class UserControllerTest {
         var userId = testUser.getId();
 
         var request = delete("/api/users/" + userId)
-                .with(user(testUser));
+                .with(token);
 
         mockMvc.perform(request)
                 .andExpect(status().isNoContent());
@@ -197,10 +198,12 @@ class UserControllerTest {
         var anotherUser = Instancio.of(modelGenerator.getUserModel()).create();
         userRepository.save(anotherUser);
 
+        var tokenAnotherUser = jwt().jwt(builder -> builder.subject(anotherUser.getEmail()));
+
         var testUserId = testUser.getId();
 
         var request = delete("/api/users/" + testUserId)
-                .with(user(anotherUser));
+                .with(tokenAnotherUser);
 
         mockMvc.perform(request)
                 .andExpect(status().isForbidden());
