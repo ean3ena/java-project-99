@@ -40,6 +40,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/welcome").permitAll()
+                        .requestMatchers("/index.html").permitAll()
+                        .requestMatchers("/assets/**").permitAll()
                         .requestMatchers("/api/login").permitAll()
                         .anyRequest().authenticated()
                 )
