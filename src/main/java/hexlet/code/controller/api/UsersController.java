@@ -7,6 +7,7 @@ import hexlet.code.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,7 @@ public class UsersController {
     private UserService userService;
 
     @GetMapping
-    public List<UserDTO> index() {
+    public ResponseEntity<List<UserDTO>> index() {
         return userService.getAll();
     }
 
@@ -45,7 +46,7 @@ public class UsersController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("#id == authentication.principal.id")
+    @PreAuthorize("@userService.getUserEmailById(#id) == authentication.token.claims['sub']")
     public UserDTO update(@RequestBody @Valid UserUpdateDTO userData,
                           @PathVariable Long id) {
         var dto = userService.update(userData, id);
@@ -54,7 +55,7 @@ public class UsersController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("#id == authentication.principal.id")
+    @PreAuthorize("@userService.getUserEmailById(#id) == authentication.token.claims['sub']")
     public void destroy(@PathVariable Long id) {
         userService.delete(id);
     }
