@@ -1,3 +1,10 @@
+logging:
+  level:
+    root: INFO
+    web: DEBUG
+    org:
+      springframework:
+        security: DEBUG
 spring:
   datasource:
     driver-class-name: org.h2.Driver
