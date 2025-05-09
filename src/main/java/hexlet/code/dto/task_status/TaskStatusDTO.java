@@ -1,4 +1,4 @@
-package hexlet.code.dto;
+package hexlet.code.dto.task_status;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
