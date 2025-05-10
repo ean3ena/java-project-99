@@ -48,6 +48,7 @@ dependencies {
 
     implementation("org.instancio:instancio-junit:3.6.0")
     implementation("net.datafaker:datafaker:2.0.1")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
 
     testImplementation(platform("org.junit:junit-bom:5.10.1"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
