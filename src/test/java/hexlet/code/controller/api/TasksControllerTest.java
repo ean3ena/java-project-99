@@ -3,9 +3,11 @@ package hexlet.code.controller.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.task.TaskDTO;
 import hexlet.code.mapper.TaskMapper;
+import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
+import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
@@ -61,6 +63,9 @@ class TasksControllerTest {
     private TaskStatusRepository taskStatusRepository;
 
     @Autowired
+    private LabelRepository labelRepository;
+
+    @Autowired
     private TaskRepository taskRepository;
 
     @Autowired
@@ -69,6 +74,7 @@ class TasksControllerTest {
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
     private User testUser;
     private TaskStatus testTaskStatus;
+    private Label testLabel;
     private Task testTask;
 
     @BeforeEach
@@ -87,11 +93,23 @@ class TasksControllerTest {
         testTaskStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
         taskStatusRepository.save(testTaskStatus);
 
+        testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
+        labelRepository.save(testLabel);
+
         testTask = Instancio.of(modelGenerator.getTaskModel()).create();
-        testTask.setIndex(2);
+        testTask.setTaskIndex(2);
         testTask.setAssignee(testUser);
         testTask.setTaskStatus(testTaskStatus);
+        testTask.addLabel(testLabel);
         taskRepository.save(testTask);
+    }
+
+    @AfterEach
+    void clear() {
+        taskRepository.deleteAll();
+        labelRepository.deleteAll();
+        taskStatusRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -130,7 +148,7 @@ class TasksControllerTest {
     void testCreate() throws Exception {
 
         var taskData = Instancio.of(modelGenerator.getTaskModel()).create();
-        taskData.setIndex(3);
+        taskData.setTaskIndex(3);
         taskData.setAssignee(testUser);
         taskData.setTaskStatus(testTaskStatus);
 
@@ -149,7 +167,7 @@ class TasksControllerTest {
         var task = taskRepository.findById(testTask.getId() + 1).orElse(null);
 
         assertNotNull(task);
-        assertEquals(taskData.getIndex(), task.getIndex());
+        assertEquals(taskData.getTaskIndex(), task.getTaskIndex());
         assertEquals(taskData.getName(), task.getName());
         assertEquals(taskData.getDescription(), task.getDescription());
     }
@@ -204,12 +222,5 @@ class TasksControllerTest {
         var user = userRepository.findById(userId).orElse(null);
 
         assertNotNull(user);
-    }
-
-    @AfterEach
-    void deleteAll() {
-        taskRepository.deleteAll();
-        taskStatusRepository.deleteAll();
-        userRepository.deleteAll();
     }
 }
