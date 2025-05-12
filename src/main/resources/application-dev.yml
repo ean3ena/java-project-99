@@ -5,12 +5,6 @@ logging:
     org:
       springframework:
         security: DEBUG
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql:
-              BasicBinder: TRACE
 spring:
   datasource:
     driver-class-name: org.h2.Driver
@@ -32,7 +26,6 @@ spring:
       hibernate:
         hbm2ddl:
           auto: create-drop
-        format_sql: true
 rsa:
   private-key: classpath:certs/private.pem
   public-key: classpath:certs/public.pem
