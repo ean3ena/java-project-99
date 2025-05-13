@@ -12,6 +12,7 @@ import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
+import jakarta.transaction.Transactional;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -125,6 +126,113 @@ class TasksControllerTest {
         var actual = response.getContentAsString();
 
         List<TaskDTO> usersDTO = taskRepository.findAll().stream()
+                .map(taskMapper::map)
+                .toList();
+
+        var expected = objectMapper.writeValueAsString(usersDTO);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testIndexWithTitleCont() throws Exception {
+
+        var taskName = testTask.getName();
+        var titleSubString = taskName.substring(2, 10);
+
+        var request = get("/api/tasks?titleCont=" + titleSubString).with(jwt());
+
+        var response = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+
+        var actual = response.getContentAsString();
+
+        List<TaskDTO> usersDTO = taskRepository.findAll().stream()
+                .filter(task -> task.getName().contains(titleSubString))
+                .map(taskMapper::map)
+                .toList();
+
+        var expected = objectMapper.writeValueAsString(usersDTO);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testIndexWithAssigneeId() throws Exception {
+
+        var assignee = testTask.getAssignee();
+        var assigneeId = assignee.getId();
+
+        var request = get("/api/tasks?assigneeId=" + assigneeId).with(jwt());
+
+        var response = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+
+        var actual = response.getContentAsString();
+
+        List<TaskDTO> usersDTO = taskRepository.findAll().stream()
+                .filter(task -> task.getAssignee().getId().equals(assigneeId))
+                .map(taskMapper::map)
+                .toList();
+
+        var expected = objectMapper.writeValueAsString(usersDTO);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testIndexWithStatus() throws Exception {
+
+        var status = testTask.getTaskStatus();
+        var statusSlug = status.getSlug();
+
+        var request = get("/api/tasks?status=" + statusSlug).with(jwt());
+
+        var response = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+
+        var actual = response.getContentAsString();
+
+        List<TaskDTO> usersDTO = taskRepository.findAll().stream()
+                .filter(task -> task.getTaskStatus().getSlug().equals(statusSlug))
+                .map(taskMapper::map)
+                .toList();
+
+        var expected = objectMapper.writeValueAsString(usersDTO);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Transactional
+    void testIndexWithLabelId() throws Exception {
+
+        var labelId = testLabel.getId();
+
+        var request = get("/api/tasks?labelId=" + labelId).with(jwt());
+
+        var response = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+
+        var actual = response.getContentAsString();
+
+        List<TaskDTO> usersDTO = taskRepository.findAll().stream()
+                .filter(task -> {
+                    for (var label : task.getLabels()) {
+                        if (label.getId().equals(labelId)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
                 .map(taskMapper::map)
                 .toList();
 
