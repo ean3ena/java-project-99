@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Getter
 @Setter
 public class TaskDTO {
 
     private Long id;
+    private Set<Long> taskLabelIds;
     private Integer index;
 
     @JsonFormat(pattern = "yyyy-MM-dd")

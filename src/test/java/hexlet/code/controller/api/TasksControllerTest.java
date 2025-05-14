@@ -255,10 +255,14 @@ class TasksControllerTest {
     @Test
     void testCreate() throws Exception {
 
+        var labelData = Instancio.of(modelGenerator.getLabelModel()).create();
+        labelRepository.save(labelData);
+
         var taskData = Instancio.of(modelGenerator.getTaskModel()).create();
         taskData.setTaskIndex(3);
         taskData.setAssignee(testUser);
         taskData.setTaskStatus(testTaskStatus);
+        taskData.addLabel(labelData);
 
         var taskCreateDTO = taskMapper.map(taskData);
 

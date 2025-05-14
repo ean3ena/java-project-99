@@ -6,6 +6,10 @@ spring:
   output:
     ansi:
       enabled: always
+  jpa:
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
 sentry:
   dsn: https://381b8844dc2b098adfb12f01ea86804f@o4509317924716544.ingest.de.sentry.io/4509320085241936
   send-default-pii: true

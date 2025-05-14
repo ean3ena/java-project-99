@@ -13,6 +13,8 @@ import java.time.LocalDate;
 public class TaskStatusDTO {
 
     private Long id;
+
+    @NotBlank
     private String name;
 
     @Column(unique = true)

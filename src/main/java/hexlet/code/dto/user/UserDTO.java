@@ -9,10 +9,11 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class UserDTO {
+
     private Long id;
+    private String email;
     private String firstName;
     private String lastName;
-    private String email;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate createdAt;
