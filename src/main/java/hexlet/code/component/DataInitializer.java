@@ -5,6 +5,7 @@ import hexlet.code.model.Label;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class DataInitializer implements ApplicationRunner {
     private UserService userService;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private TaskStatusRepository taskStatusRepository;
 
     @Autowired
@@ -28,13 +32,7 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        var userData = new UserCreateDTO();
-
-        userData.setFirstName("hexlet");
-        userData.setEmail("hexlet@example.com");
-        userData.setPassword("qwerty");
-
-        userService.create(userData);
+        initUser();
 
         initTaskStatus("Draft", "draft");
         initTaskStatus("To Review", "to_review");
@@ -44,6 +42,19 @@ public class DataInitializer implements ApplicationRunner {
 
         initLabel("feature");
         initLabel("bug");
+    }
+
+    private void initUser() {
+
+        var user = userRepository.findByEmail("hexlet@example.com");
+
+        if (user.isEmpty()) {
+            var userData = new UserCreateDTO();
+            userData.setFirstName("hexlet");
+            userData.setEmail("hexlet@example.com");
+            userData.setPassword("qwerty");
+            userService.create(userData);
+        }
     }
 
     private void initTaskStatus(String name, String slug) {
