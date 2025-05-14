@@ -6,6 +6,7 @@ plugins {
     id("org.springframework.boot") version "3.4.2"
     id("io.spring.dependency-management") version "1.1.7"
     id("io.sentry.jvm.gradle") version "5.5.0"
+    id("org.sonarqube") version "6.0.1.5171"
 }
 
 group = "hexlet.code"
@@ -27,6 +28,14 @@ sentry {
     org = "andrey-eryomenko"
     projectName = "task-manager"
     authToken = System.getenv("SENTRY_AUTH_TOKEN")
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "ean3ena_java-project-99")
+        property("sonar.organization", "ean3ena")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
 
 configurations {
