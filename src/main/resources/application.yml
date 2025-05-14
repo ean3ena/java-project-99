@@ -6,3 +6,6 @@ spring:
   output:
     ansi:
       enabled: always
+sentry:
+  dsn: https://381b8844dc2b098adfb12f01ea86804f@o4509317924716544.ingest.de.sentry.io/4509320085241936
+  send-default-pii: true
