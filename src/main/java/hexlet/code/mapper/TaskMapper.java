@@ -27,14 +27,11 @@ import java.util.stream.Collectors;
 )
 public abstract class TaskMapper {
 
-    private final TaskStatusRepository taskStatusRepository;
-    private final LabelRepository labelRepository;
+    @Autowired
+    private TaskStatusRepository taskStatusRepository;
 
     @Autowired
-    public TaskMapper(TaskStatusRepository taskStatusRepository, LabelRepository labelRepository) {
-        this.taskStatusRepository = taskStatusRepository;
-        this.labelRepository = labelRepository;
-    }
+    private LabelRepository labelRepository;
 
     @Mapping(target = "assignee", source = "assigneeId")
     @Mapping(target = "taskStatus", source = "status")
