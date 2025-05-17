@@ -3,9 +3,11 @@ package hexlet.code.service;
 import hexlet.code.dto.label.LabelCreateDTO;
 import hexlet.code.dto.label.LabelDTO;
 import hexlet.code.dto.label.LabelUpdateDTO;
+import hexlet.code.exception.ForbiddenOperationException;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.LabelMapper;
 import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class LabelService {
 
     @Autowired
     private LabelRepository labelRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
 
     @Autowired
     private LabelMapper labelMapper;
@@ -55,6 +60,9 @@ public class LabelService {
     }
 
     public void delete(Long id) {
+        if (!taskRepository.findAllByLabelId(id).isEmpty()) {
+            throw new ForbiddenOperationException("Forbidden operation");
+        }
         labelRepository.deleteById(id);
     }
 }

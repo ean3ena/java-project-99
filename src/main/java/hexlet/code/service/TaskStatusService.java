@@ -3,8 +3,10 @@ package hexlet.code.service;
 import hexlet.code.dto.task_status.TaskStatusCreateDTO;
 import hexlet.code.dto.task_status.TaskStatusDTO;
 import hexlet.code.dto.task_status.TaskStatusUpdateDTO;
+import hexlet.code.exception.ForbiddenOperationException;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.TaskStatusMapper;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,9 @@ public class TaskStatusService {
 
     @Autowired
     private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
 
     @Autowired
     private TaskStatusMapper taskStatusMapper;
@@ -55,6 +60,9 @@ public class TaskStatusService {
     }
 
     public void delete(Long id) {
+        if (!taskRepository.findAllByTaskStatusId(id).isEmpty()) {
+            throw new ForbiddenOperationException("Forbidden operation");
+        }
         taskStatusRepository.deleteById(id);
     }
 }
