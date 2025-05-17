@@ -7,8 +7,15 @@ spring:
     ansi:
       enabled: always
   jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      use-new-id-generator-mappings: false
     properties:
       hibernate:
+        format_sql: true
+        hbm2ddl:
+          auto: create-drop
         enable_lazy_load_no_trans: true
 sentry:
   dsn: https://381b8844dc2b098adfb12f01ea86804f@o4509317924716544.ingest.de.sentry.io/4509320085241936
