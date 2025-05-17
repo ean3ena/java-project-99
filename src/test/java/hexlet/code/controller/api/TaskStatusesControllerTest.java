@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.task_status.TaskStatusDTO;
 import hexlet.code.mapper.TaskStatusMapper;
 import hexlet.code.model.TaskStatus;
+import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +53,16 @@ class TaskStatusesControllerTest {
     private ModelGenerator modelGenerator;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
+    private LabelRepository labelRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
 
     @Autowired
     private TaskStatusMapper taskStatusMapper;
@@ -60,6 +72,10 @@ class TaskStatusesControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
+
+        taskRepository.deleteAll();
+        labelRepository.deleteAll();
+        userRepository.deleteAll();
 
         taskStatusRepository.deleteAll();
 
@@ -148,7 +164,7 @@ class TaskStatusesControllerTest {
     }
 
     @Test
-    void testDestroy() throws Exception {
+    void testDestroyWithoutRelatedTask() throws Exception {
 
         var taskStatusId = testTaskStatus.getId();
 
@@ -161,5 +177,30 @@ class TaskStatusesControllerTest {
         var taskStatus = taskStatusRepository.findById(taskStatusId).orElse(null);
 
         assertNull(taskStatus);
+    }
+
+    @Test
+    void testDestroyWithRelatedTask() throws Exception {
+
+        var testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
+        labelRepository.save(testLabel);
+
+        var testTask = Instancio.of(modelGenerator.getTaskModel()).create();
+        testTask.setTaskStatus(testTaskStatus);
+        testTask.setAssignee(null);
+        testTask.addLabel(testLabel);
+        taskRepository.save(testTask);
+
+        var taskStatusId = testTaskStatus.getId();
+
+        var request = delete("/api/task_statuses/" + taskStatusId)
+                .with(token);
+
+        mockMvc.perform(request)
+                .andExpect(status().isForbidden());
+
+        var taskStatus = taskStatusRepository.findById(taskStatusId).orElse(null);
+
+        assertNotNull(taskStatus);
     }
 }

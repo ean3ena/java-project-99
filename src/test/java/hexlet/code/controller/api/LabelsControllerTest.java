@@ -5,9 +5,11 @@ import hexlet.code.dto.label.LabelDTO;
 import hexlet.code.mapper.LabelMapper;
 import hexlet.code.model.Label;
 import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskRepository;
+import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import org.instancio.Instancio;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +53,16 @@ class LabelsControllerTest {
     private ModelGenerator modelGenerator;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
     private LabelRepository labelRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
 
     @Autowired
     private LabelMapper labelMapper;
@@ -62,6 +73,12 @@ class LabelsControllerTest {
     @BeforeEach
     void setUp() throws Exception {
 
+        taskRepository.deleteAll();
+        taskStatusRepository.deleteAll();
+        userRepository.deleteAll();
+
+        labelRepository.deleteAll();
+
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(springSecurity())
@@ -71,11 +88,6 @@ class LabelsControllerTest {
         labelRepository.save(testLabel);
 
         token = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
-    }
-
-    @AfterEach
-    void clear() {
-        labelRepository.deleteAll();
     }
 
     @Test
@@ -150,7 +162,7 @@ class LabelsControllerTest {
     }
 
     @Test
-    void testDestroy() throws Exception {
+    void testDestroyWithoutRelatedTask() throws Exception {
 
         var labelId = testLabel.getId();
 
@@ -163,5 +175,30 @@ class LabelsControllerTest {
         var label = labelRepository.findById(labelId).orElse(null);
 
         assertNull(label);
+    }
+
+    @Test
+    void testDestroyWithRelatedTask() throws Exception {
+
+        var testTaskStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
+        taskStatusRepository.save(testTaskStatus);
+
+        var testTask = Instancio.of(modelGenerator.getTaskModel()).create();
+        testTask.setTaskStatus(testTaskStatus);
+        testTask.setAssignee(null);
+        testTask.addLabel(testLabel);
+        taskRepository.save(testTask);
+
+        var labelId = testLabel.getId();
+
+        var request = delete("/api/labels/" + labelId)
+                .with(token);
+
+        mockMvc.perform(request)
+                .andExpect(status().isForbidden());
+
+        var label = labelRepository.findById(labelId).orElse(null);
+
+        assertNotNull(label);
     }
 }

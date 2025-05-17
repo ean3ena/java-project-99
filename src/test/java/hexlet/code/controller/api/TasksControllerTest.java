@@ -14,7 +14,6 @@ import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import jakarta.transaction.Transactional;
 import org.instancio.Instancio;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +80,11 @@ class TasksControllerTest {
     @BeforeEach
     void setUp() throws Exception {
 
+        taskRepository.deleteAll();
+        labelRepository.deleteAll();
+        taskStatusRepository.deleteAll();
+        userRepository.deleteAll();
+
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(springSecurity())
@@ -103,14 +107,6 @@ class TasksControllerTest {
         testTask.setTaskStatus(testTaskStatus);
         testTask.addLabel(testLabel);
         taskRepository.save(testTask);
-    }
-
-    @AfterEach
-    void clear() {
-        taskRepository.deleteAll();
-        labelRepository.deleteAll();
-        taskStatusRepository.deleteAll();
-        userRepository.deleteAll();
     }
 
     @Test

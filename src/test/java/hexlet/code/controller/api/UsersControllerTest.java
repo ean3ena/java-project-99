@@ -1,6 +1,9 @@
 package hexlet.code.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskRepository;
+import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.util.ModelGenerator;
 import hexlet.code.dto.user.UserDTO;
 import hexlet.code.mapper.UserMapper;
@@ -54,6 +57,15 @@ class UsersControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
+    private LabelRepository labelRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
     private UserMapper userMapper;
 
     private JwtRequestPostProcessor token;
@@ -61,6 +73,10 @@ class UsersControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
+
+        taskRepository.deleteAll();
+        labelRepository.deleteAll();
+        taskStatusRepository.deleteAll();
 
         userRepository.deleteAll();
 
@@ -177,7 +193,7 @@ class UsersControllerTest {
     }
 
     @Test
-    void testDestroyWithOwnUser() throws Exception {
+    void testDestroyWithOwnUserAndWithoutRelatedTask() throws Exception {
 
         var userId = testUser.getId();
 
@@ -190,6 +206,34 @@ class UsersControllerTest {
         var user = userRepository.findById(userId).orElse(null);
 
         assertNull(user);
+    }
+
+    @Test
+    void testDestroyWithOwnUserAndRelatedTask() throws Exception {
+
+        var testTaskStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
+        taskStatusRepository.save(testTaskStatus);
+
+        var testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
+        labelRepository.save(testLabel);
+
+        var testTask = Instancio.of(modelGenerator.getTaskModel()).create();
+        testTask.setTaskStatus(testTaskStatus);
+        testTask.setAssignee(testUser);
+        testTask.addLabel(testLabel);
+        taskRepository.save(testTask);
+
+        var userId = testUser.getId();
+
+        var request = delete("/api/users/" + userId)
+                .with(token);
+
+        mockMvc.perform(request)
+                .andExpect(status().isForbidden());
+
+        var user = userRepository.findById(userId).orElse(null);
+
+        assertNotNull(user);
     }
 
     @Test
