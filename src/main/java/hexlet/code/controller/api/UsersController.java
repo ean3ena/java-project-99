@@ -46,7 +46,7 @@ public class UsersController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("@userService.getUserEmailById(#id) == authentication.token.claims['sub']")
+    @PreAuthorize("@userService.getUserEmailById(#id) == authentication.name")
     public UserDTO update(@RequestBody @Valid UserUpdateDTO userData,
                           @PathVariable Long id) {
         var dto = userService.update(userData, id);
@@ -55,7 +55,7 @@ public class UsersController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("@userService.getUserEmailById(#id) == authentication.token.claims['sub']")
+    @PreAuthorize("@userService.getUserEmailById(#id) == authentication.name")
     public void destroy(@PathVariable Long id) {
         userService.delete(id);
     }
